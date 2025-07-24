@@ -1,0 +1,33 @@
+{
+      "version": 2,
+        "builds": [
+            {
+                  "src": "dist/**",
+                        "use": "@vercel/static-build",
+                              "config": {
+                                      "distDir": "dist"
+                                            }
+                                                },
+                                                    {
+                                                          "src": "dist/index.js",
+                                                                "use": "@vercel/node"
+                                                                    }
+                                                                      ],
+                                                                        "routes": [
+                                                                            {
+                                                                                  "src": "/api/(.*)",
+                                                                                        "dest": "dist/index.js"
+                                                                                            },
+                                                                                                {
+                                                                                                      "src": "/(.*)",
+                                                                                                            "dest": "/index.html"
+                                                                                                                }
+                                                                                                                  ],
+                                                                                                                    "build": {
+                                                                                                                        "env": {
+                                                                                                                              "NODE_ENV": "production"
+                                                                                                                                  }
+                                                                                                                                    }
+                                                                                                                                    }
+
+                                                                                                                                
