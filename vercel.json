@@ -5,22 +5,22 @@
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "client/dist" // Assuming Vite builds to 'dist' inside 'client'
+        "distDir": "client/dist" // THIS IS THE ONLY PART THAT SHOULD BE HERE FOR "distDir"
       }
     },
     {
-      "src": "server/index.js", // Or your main server entry point
+      "src": "server/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)", // Route all /api requests to your serverless function
-      "dest": "server/index.js" // Your serverless function entry point
+      "src": "/api/(.*)",
+      "dest": "server/index.js"
     },
     {
-      "src": "/(.*)", // Catch-all for frontend routes
-      "dest": "client/dist/$1" // Serve from the client's build output
+      "src": "/(.*)",
+      "dest": "client/dist/$1"
     }
   ]
 }
