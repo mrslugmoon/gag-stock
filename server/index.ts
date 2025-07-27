@@ -1,71 +1,67 @@
+// server/index.ts
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
 
+// Create the Express app instance
 const app = express();
+
+// Add standard Express middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Custom logging middleware (simplified for Vercel environment)
+// This middleware captures JSON responses and logs API requests.
+// Vercel will capture console.log/console.error output to your function logs.
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
+  const originalResJson = res.json;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
-  const originalResJson = res.json;
+  // Override res.json to capture the response body for logging
   res.json = function (bodyJson, ...args) {
     capturedJsonResponse = bodyJson;
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
+  // Log API request details when the response finishes
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (req.path.startsWith("/api")) {
+      let logLine = `${req.method} ${req.path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
+      console.log(logLine); // Log to Vercel function logs
     }
   });
-
   next();
 });
 
-(async () => {
-  const server = await registerRoutes(app);
+// Register your API routes onto the Express app instance.
+// The `registerRoutes` function returns an http.Server, but in a serverless context,
+// we only need it to attach the routes to the `app` instance.
+// The returned server object is not used for listening.
+registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+// Error handling middleware for API routes.
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  console.error("API Error:", err); // Log the full error details to Vercel function logs
+  res.status(status).json({ message });
+  // IMPORTANT: Do NOT re-throw errors here in a serverless function,
+  // as it can cause the function instance to crash. The client will
+  // already receive the error response.
+});
 
-    res.status(status).json({ message });
-    throw err;
-  });
+// Export the Express app instance. This is the CRITICAL part for Vercel.
+// Vercel will automatically wrap this Express app to handle incoming requests
+// for your serverless function.
+export default app;
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
-})();
+// Removed:
+// - The `(async () => { ... })();` block.
+// - The `server.listen()` call.
+// - Imports and calls to `setupVite` and `serveStatic`
+//   (Vercel handles static file serving and Vite's dev server is not needed in production).
+// - The `log` function import (as console.log is used directly).
