@@ -1,15 +1,15 @@
 {
   "version": 2,
   "installCommand": "npm install",
-  "buildCommand": "npm run build", // This runs your full build script from package.json
+  "buildCommand": "npm run build", 
 
   "builds": [
     {
-      "src": "dist/index.js",       // The compiled server code in the root 'dist' folder
+      "src": "dist/index.js",       
       "use": "@vercel/node"
     },
     {
-      "src": "dist/**",             // All other files in the root 'dist' folder (your frontend)
+      "src": "dist/**",            
       "use": "@vercel/static"
     }
   ],
@@ -17,11 +17,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "dist/index.js"       // Route all /api requests to your compiled serverless function
+      "dest": "dist/index.js"      
     },
     {
       "src": "/(.*)",
-      "dest": "dist/index.html"     // Route all other requests to index.html for client-side routing
+      "dest": "dist/index.html"     
     }
   ]
 }
