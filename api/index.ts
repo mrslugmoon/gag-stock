@@ -1,6 +1,6 @@
-// server/index.ts
+// api/index.ts
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes.js"; // <--- CRITICAL FIX: Added .js extension
 
 // Create the Express app instance
 const app = express();
@@ -58,10 +58,3 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 // Vercel will automatically wrap this Express app to handle incoming requests
 // for your serverless function.
 export default app;
-
-// Removed:
-// - The `(async () => { ... })();` block.
-// - The `server.listen()` call.
-// - Imports and calls to `setupVite` and `serveStatic`
-//   (Vercel handles static file serving and Vite's dev server is not needed in production).
-// - The `log` function import (as console.log is used directly).
