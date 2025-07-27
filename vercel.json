@@ -3,16 +3,26 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
 
-  "outputDirectory": "dist", 
+  "outputDirectory": "dist",
 
-  "rewrites": [
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@4.0.0",
+      "includeFiles": [
+        "api/routes.ts",
+        "shared/schema.ts" 
+      ]
+    }
+  },
+
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api" 
+      "src": "/api/(.*)",
+      "dest": "api/index.ts"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "dist/index.html"
     }
   ]
 }
