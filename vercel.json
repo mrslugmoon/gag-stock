@@ -7,14 +7,14 @@
 
   "functions": {
     "dist/index.js": {
-      "runtime": "@vercel/node"
+      "runtime": "@vercel/node@3.0.0" 
     }
   },
 
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/dist/index.js" 
+      "destination": "/dist/index.js"
     },
     {
       "source": "/(.*)",
