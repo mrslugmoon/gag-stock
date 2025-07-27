@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "npm run build-client && concurrently \"vite --force\" \"node dist/index.js\"",
     "build-client": "cd client && vite build",
-    // REMOVE the "build-server" script entirely
-    "build": "npm run build-client && cp -r client/dist/* dist/ && rm -rf client/dist", // <--- CRITICAL CHANGE: This now ONLY builds the client and copies it
-    "start": "node dist/index.js" // This is for local development, Vercel will use its own function invocation
+
+    "build": "npm run build-client && cp -r client/dist/* dist/ && rm -rf client/dist", 
+    "start": "node dist/index.js" 
   },
   "keywords": [],
   "author": "",
