@@ -1,18 +1,24 @@
 {
   "version": 2,
   "installCommand": "npm install",
-  "buildCommand": "npm run build", 
+  "buildCommand": "npm run build",
 
-  "outputDirectory": "dist", 
-  
+  "outputDirectory": "dist",
+
+  "functions": {
+    "dist/index.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api" 
+      "destination": "/dist/index.js" 
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html" 
+      "destination": "/index.html"
     }
   ]
 }
