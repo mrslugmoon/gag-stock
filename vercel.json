@@ -8,10 +8,7 @@
   "functions": {
     "api/index.ts": {
       "runtime": "@vercel/node@4.0.0",
-      "includeFiles": [
-        "api/routes.ts",
-        "shared/schema.ts" 
-      ]
+      "includeFiles": "api/**/*.ts" 
     }
   },
 
